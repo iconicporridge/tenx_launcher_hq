@@ -52,9 +52,7 @@ def main(args):
     FIRE      = ( 0,  0,  0,  0,  0,  1)
 
     myDevice = Tenx()
-    myDevice.send_cmd(DOWN)
-    print("Missile Away")
-
+    myDevice.send_cmd(FIRE)
 
 
 if __name__ == '__main__':
