@@ -38,14 +38,10 @@ class USB_Window(QWidget):
     def add_svg(self):
         self.usb_image = QSvgWidget('./Images/usb-0.svg')
         self.grid.addWidget(self.usb_image, 0, 1)
-        max_Width = self.usb_image.width()/2
-        max_Height = self.usb_image.height()/2
+        max_Width = self.usb_image.width()/4
+        max_Height = self.usb_image.height()/4
         self.usb_image.setMaximumWidth(max_Width)
         self.usb_image.setMaximumHeight(max_Height)
-
-
-
-
 
 
 if __name__ == '__main__':
