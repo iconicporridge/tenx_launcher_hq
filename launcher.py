@@ -3,14 +3,14 @@
 import sys
 import platform
 import usb
+import time
 
 class tenx:
 
     def __init__(self):
-        self.connect()
         self.setup_commands()
 
-    def connect(self):
+    def connect_to_launcher(self):
         self.dev = usb.core.find(idVendor=0x1130, idProduct=0x0202)
         try:
             self.dev.detach_kernel_driver(0)
@@ -45,3 +45,10 @@ class tenx:
         self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
         self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
         self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, cmd+self.CMDFILL)
+        time.sleep(1)
+        
+if __name__ == '__main__':
+    launcher = tenx()
+    launcher.connect_to_launcher()
+    launcher.send_cmd(launcher.fire)
+    print("Away")
