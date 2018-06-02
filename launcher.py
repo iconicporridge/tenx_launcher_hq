@@ -10,13 +10,20 @@ class tenx:
     def __init__(self):
         self.setup_commands()
 
-    def connect_to_launcher(self):
+    def connect_launcher(self):
         self.dev = usb.core.find(idVendor=0x1130, idProduct=0x0202)
         try:
             self.dev.detach_kernel_driver(0)
             self.dev.detach_kernel_driver(1)
         except Exception as e:
             pass
+
+    def check_connection(self):
+        dev = usb.core.find(idVendor=0x1130, idProduct=0x0202)
+        if (dev is None):
+            return False
+        else:
+            return True
 
     def setup_commands(self):
         self.INITA = (85, 83, 66, 67,  0,  0,  4,  0)
@@ -46,7 +53,7 @@ class tenx:
         self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
         self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, cmd+self.CMDFILL)
         time.sleep(1)
-        
+
 if __name__ == '__main__':
     launcher = tenx()
     launcher.connect_to_launcher()

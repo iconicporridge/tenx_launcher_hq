@@ -8,35 +8,36 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread
 from launcher import tenx
 
-class connect_thread(QThread):
-
-    def __init__(self, launcher):
-        super().__init__()
-        self.launcher = launcher
-
-    def run(self):
-        while (self.launcher.dev is None):
-            self.sleep(0.1)
-            self.launcher.connect_to_launcher()
-
 class monitor_thread(QThread):
 
+    signal = pyqtSignal()
+
     def __init__(self, launcher):
         super().__init__()
         self.launcher = launcher
 
     def run(self):
-        while (self.launcher.dev is not None):
-            self.sleep(0.1)
-            self.launcher.connect_to_launcher()
+
+        self.state = self.launcher.dev
+
+        while True:
+            self.new_state = self.launcher.check_connection()
+            if (self.new_state == self.state):
+                self.sleep(0.1)
+            else:
+                self.state = self.new_state
+                self.launcher.connect_launcher()
+                self.signal.emit()
+                self.sleep(0.1)
+
 
 class usb_window(QWidget):
 
     def __init__(self):
         super().__init__()
         self.launcher = tenx()
-        self.launcher.connect_to_launcher()
-        self.spawn_threads()
+        self.launcher.connect_launcher()
+        self.spawn_monitor()
         self.initUI()
 
     def initUI(self):
@@ -49,21 +50,14 @@ class usb_window(QWidget):
         self.initial_grid()
         self.add_usb_image()
         self.show()
-        #self.start_monitoring()
-        self.launcher.send_cmd(self.launcher.fire)
-        print("Missile Away")
+        self.start_monitoring()
 
-    def spawn_threads(self):
-        self.wait = connect_thread(self.launcher)
-        self.monitor = monitor_thread(self.launcher)
-        self.wait.finished.connect(self.usb_toggle)
-        self.monitor.finished.connect(self.usb_toggle)
+    def spawn_monitor(self):
+        self.connection_monitor = monitor_thread(self.launcher)
 
     def start_monitoring(self):
-        if (self.launcher.dev is None):
-            self.wait.start()
-        else:
-            self.monitor.start()
+        self.connection_monitor.signal.connect(self.usb_toggle)
+        self.connection_monitor.start()
 
     def define_colors(self):
         self.window_color = "#DEDEDE"
@@ -132,7 +126,6 @@ class usb_window(QWidget):
 
     def usb_toggle(self):
         self.update_usb_image()
-        self.start_monitoring()
 
 
 if __name__ == '__main__':
