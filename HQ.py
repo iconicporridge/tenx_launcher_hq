@@ -1,11 +1,11 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
 from PyQt5.QtWidgets import QLabel, QGridLayout, QSizePolicy
-from PyQt5.QtWidgets import QGraphicsOpacityEffect
+from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel
 from PyQt5.QtGui import QIcon, QColor, QPalette
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread
+from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread, Qt, QRect
 from launcher import tenx
 
 class monitor_thread(QThread):
@@ -48,9 +48,19 @@ class usb_window(QWidget):
         self.define_colors()
         self.color_window()
         self.initial_grid()
-        self.add_usb_image()
+        self.add_boot_window()
         self.show()
         self.start_monitoring()
+
+    def add_boot_window(self):
+        self.add_usb_image()
+        self.add_boot_label()
+
+    def add_boot_label(self):
+        self.boot_label = QLabel()
+        self.boot_label.setText("Hello")
+        self.grid.addWidget(self.boot_label, 0, 0, Qt.AlignCenter)
+        self.grid.setRowStretch(0, 0)
 
     def spawn_monitor(self):
         self.connection_monitor = monitor_thread(self.launcher)
@@ -89,14 +99,14 @@ class usb_window(QWidget):
         self.usb_image = QSvgWidget()
         self.usb_image.image0 = './Images/usb-0.svg'
         self.usb_image.image1 = './Images/usb-1.svg'
-        self.usb_image.max_height = self.height/3
+        self.usb_image.max_height = self.height/1.5
         self.update_usb_image()
-        self.grid.addWidget(self.usb_image, 0, 1)
+        self.grid.addWidget(self.usb_image, 1, 0)
+        self.grid.setRowStretch(1, 1)
 
     def animate_svg(self, svg_image):
         svg_image.opac_eff = QGraphicsOpacityEffect()
         svg_image.setGraphicsEffect(svg_image.opac_eff)
-
         svg_image.animation = QPropertyAnimation(svg_image.opac_eff, b"opacity")
         svg_image.animation.setDuration(2000)
         svg_image.animation.setStartValue(0.1)

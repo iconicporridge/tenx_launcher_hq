@@ -56,6 +56,6 @@ class tenx:
 
 if __name__ == '__main__':
     launcher = tenx()
-    launcher.connect_to_launcher()
+    launcher.connect_launcher()
     launcher.send_cmd(launcher.fire)
     print("Away")
