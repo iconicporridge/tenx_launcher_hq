@@ -27,10 +27,27 @@ class monitor_thread(QThread):
                 self.sleep(0.1)
             else:
                 self.state = self.new_state
-                self.launcher.connect_launcher()
                 self.signal.emit()
                 self.sleep(0.1)
 
+class boot_window_monitor(QThread):
+
+        signal = pyqtSignal()
+
+        def __init__(self, app):
+            super().__init__()
+            self.app = app
+
+        def run():
+            while True:
+
+                # Check whether the launcher is connnected
+                # if it is, start a countdown
+                # during countdown, keep checking if the usb has been tripped
+                # if so, restart the loop
+                # if not and countdown reaches 0
+                # change window
+                # end
 
 class usb_window(QWidget):
 
@@ -38,8 +55,8 @@ class usb_window(QWidget):
         super().__init__()
         self.launcher = tenx()
         self.launcher.connect_launcher()
-        self.spawn_monitor()
         self.add_icon()
+        self.screen = "boot"
         self.initUI()
 
     def initUI(self):
@@ -49,7 +66,6 @@ class usb_window(QWidget):
         self.centre_window()
         self.define_colors()
         self.color_window()
-        self.initial_grid()
         self.show()
         self.add_boot_window()
         self.start_monitoring()
@@ -60,6 +76,7 @@ class usb_window(QWidget):
         self.setWindowIcon(self.icon)
 
     def add_boot_window(self):
+        self.initial_grid()
         self.add_usb_image()
         self.add_boot_label()
 
@@ -77,19 +94,20 @@ class usb_window(QWidget):
         pal.setColor(QPalette.WindowText, text_color)
         self.boot_label.setPalette(pal)
 
-        if (self.launcher.dev is None):
-            self.boot_label.setText("Please insert your Tenx launcher")
-        else:
-            self.boot_label.setText("Welcome Commander")
         self.grid.addWidget(self.boot_label, 0, 0, Qt.AlignCenter)
 
         self.spacing_label = QLabel()
         self.grid.addWidget(self.spacing_label, 2, 0, Qt.AlignCenter)
 
-    def spawn_monitor(self):
-        self.connection_monitor = monitor_thread(self.launcher)
+        self.update_boot_label()
+
 
     def start_monitoring(self):
+        self.boot_window_monitor = boot_window_monitor(self)
+        self.boot_window_monitor.signal.connect(self.change_window)
+        self.boot_window_monitor.start()
+
+        self.connection_monitor = monitor_thread(self.launcher)
         self.connection_monitor.signal.connect(self.usb_toggle)
         self.connection_monitor.start()
 
@@ -126,8 +144,9 @@ class usb_window(QWidget):
         self.usb_image.image0 = './Images/usb-0.svg'
         self.usb_image.image1 = './Images/usb-1.svg'
         self.usb_image.max_height = self.height/2
-        self.update_usb_image()
         self.grid.addWidget(self.usb_image, 1, 0, Qt.AlignHCenter)
+        self.update_usb_image()
+
 
     def animate_svg(self, svg_image):
         svg_image.opac_eff = QGraphicsOpacityEffect()
@@ -154,9 +173,33 @@ class usb_window(QWidget):
         self.usb_image.setFixedHeight(height)
         self.animate_svg(self.usb_image)
 
-    def usb_toggle(self):
-        self.update_usb_image()
+    def update_boot_label(self):
+        if (self.launcher.dev is None):
+            self.boot_label.setText("Please insert your Tenx launcher")
+        else:
+            self.boot_label.setText("Welcome Commander")
 
+    def usb_toggle(self):
+        self.launcher.connect_launcher()
+        if (self.screen == "control"):
+            self.change_window()
+        elseif (self.screen == "boot"):
+            self.update_usb_image()
+            self.update_boot_label()
+
+    def change_window(self):
+        if (self.screen == "control"):
+
+            self.screen = "boot"
+            # delete this grid and its widgets
+            self.add_boot_window()
+            self.boot_window_monitor.start()
+
+        elseif (self.screen == "boot")
+
+            self.screen = "control"
+            # delete this grid and its widgets (or hide them)
+            # self.add_control_window()
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
