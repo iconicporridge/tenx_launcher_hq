@@ -1,8 +1,9 @@
 import sys
+import signal
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget
 from PyQt5.QtWidgets import QLabel, QGridLayout, QSizePolicy
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel
-from PyQt5.QtGui import QIcon, QColor, QPalette
+from PyQt5.QtGui import QIcon, QColor, QPalette, QIcon, QFont
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread, Qt, QRect
@@ -38,29 +39,52 @@ class usb_window(QWidget):
         self.launcher = tenx()
         self.launcher.connect_launcher()
         self.spawn_monitor()
+        self.add_icon()
         self.initUI()
 
     def initUI(self):
         self.a_geo = QDesktopWidget().availableGeometry()
-        self.setWindowTitle("Missile HQ")
+        self.setWindowTitle("Missile Command")
         self.size_window()
         self.centre_window()
         self.define_colors()
         self.color_window()
         self.initial_grid()
-        self.add_boot_window()
         self.show()
+        self.add_boot_window()
         self.start_monitoring()
+
+    def add_icon(self):
+        self.icon = QIcon()
+        self.icon.addFile("./Images/missile.png")
+        self.setWindowIcon(self.icon)
 
     def add_boot_window(self):
         self.add_usb_image()
         self.add_boot_label()
 
     def add_boot_label(self):
+
         self.boot_label = QLabel()
-        self.boot_label.setText("Hello")
+        font = QFont('Droid Sans', 16)
+        font.setBold(True)
+        self.boot_label.setFont(font)
+
+        text_color = QColor()
+        text_color.setNamedColor(self.grey)
+
+        pal = QPalette()
+        pal.setColor(QPalette.WindowText, text_color)
+        self.boot_label.setPalette(pal)
+
+        if (self.launcher.dev is None):
+            self.boot_label.setText("Please insert your Tenx launcher")
+        else:
+            self.boot_label.setText("Welcome Commander")
         self.grid.addWidget(self.boot_label, 0, 0, Qt.AlignCenter)
-        self.grid.setRowStretch(0, 0)
+
+        self.spacing_label = QLabel()
+        self.grid.addWidget(self.spacing_label, 2, 0, Qt.AlignCenter)
 
     def spawn_monitor(self):
         self.connection_monitor = monitor_thread(self.launcher)
@@ -71,13 +95,15 @@ class usb_window(QWidget):
 
     def define_colors(self):
         self.window_color = "#DEDEDE"
+        self.rocket_red = "#C20024"
+        self.grey = "#4D4D4D"
 
     def color_window(self):
-        self.pal = QPalette()
+        pal = QPalette()
         my_window_color = QColor()
         my_window_color.setNamedColor(self.window_color)
-        self.pal.setColor(QPalette.Window, my_window_color)
-        self.setPalette(self.pal)
+        pal.setColor(QPalette.Window, my_window_color)
+        self.setPalette(pal)
 
     def size_window(self):
         self.height = self.a_geo.height()/2
@@ -99,10 +125,9 @@ class usb_window(QWidget):
         self.usb_image = QSvgWidget()
         self.usb_image.image0 = './Images/usb-0.svg'
         self.usb_image.image1 = './Images/usb-1.svg'
-        self.usb_image.max_height = self.height/1.5
+        self.usb_image.max_height = self.height/2
         self.update_usb_image()
-        self.grid.addWidget(self.usb_image, 1, 0)
-        self.grid.setRowStretch(1, 1)
+        self.grid.addWidget(self.usb_image, 1, 0, Qt.AlignHCenter)
 
     def animate_svg(self, svg_image):
         svg_image.opac_eff = QGraphicsOpacityEffect()
@@ -123,15 +148,10 @@ class usb_window(QWidget):
             self.usb_image.load(self.usb_image.image1)
             self.usb_image.aspect_ratio = 1.0
 
-        max_height = self.usb_image.max_height
-        max_width = max_height*self.usb_image.aspect_ratio
-        self.usb_image.setMaximumWidth(max_width)
-        self.usb_image.setMaximumHeight(max_height)
-        min_width = max_width/4
-        min_height = max_height/4
-        self.usb_image.setMinimumWidth(min_width)
-        self.usb_image.setMinimumHeight(min_height)
-
+        height = self.usb_image.max_height
+        width = height*self.usb_image.aspect_ratio
+        self.usb_image.setFixedWidth(width)
+        self.usb_image.setFixedHeight(height)
         self.animate_svg(self.usb_image)
 
     def usb_toggle(self):
@@ -139,6 +159,7 @@ class usb_window(QWidget):
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
     myapp = usb_window()
     sys.exit(app.exec_())
