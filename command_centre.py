@@ -34,18 +34,24 @@ class boot_window_monitor(QThread):
 
         signal = pyqtSignal()
 
-        def __init__(self, app):
+        def __init__(self, launcher):
             super().__init__()
-            self.app = app
+            self.launcher = launcher
 
-        def run():
-            while True:
 
-                # Check whether the launcher is connnected
-                # if it is, start a countdown, if not, quit
-                # if countdown reaches 0 (main code should kill if usb toggled)
-                # change window
-                # end
+        def run(self):
+            running = True
+            while running:
+                if (self.launcher.dev is not None):
+                    self.launcher.tripped = False
+                    self.sleep(2)
+                    if (self.launcher.tripped == False):
+                        self.signal.emit()
+                        running = False
+                    else:
+                        self.sleep(0.1)
+                else:
+                    self.sleep(0.1)
 
 class usb_window(QWidget):
 
@@ -178,30 +184,25 @@ class usb_window(QWidget):
         self.launcher.connect_launcher()
         if (self.screen == "control"):
             self.change_window()
-        elseif (self.screen == "boot"):
+        else:
+            self.launcher.tripped = True
             self.update_usb_image()
             self.update_boot_label()
-            try:
-                self.boot_window_monitor.stop()
-            except:
-                pass
-            self.boot_window_monitor.start()
 
     def change_window(self):
-        if (self.screen == "control"):
-
+        if (self.screen == "control")
             self.screen = "boot"
+            print("Moved to boot screen")
             # delete this grid and its widgets
-            self.add_boot_window()
-
-        elseif (self.screen == "boot")
-
+            # self.add_boot_window()
+        else:
             self.screen = "control"
+            print("Moved to control screen")
             # delete this grid and its widgets (or hide them)
             # self.add_control_window()
 
-    def boot_monitoring():
-        self.boot_window_monitor = boot_window_monitor(self)
+    def boot_monitoring(self):
+        self.boot_window_monitor = boot_window_monitor(self.launcher)
         self.boot_window_monitor.signal.connect(self.change_window)
         self.boot_window_monitor.start()
 
