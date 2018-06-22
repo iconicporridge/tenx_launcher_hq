@@ -53,91 +53,78 @@ class boot_window_monitor(QThread):
                 else:
                     self.sleep(0.1)
 
-class usb_window(QWidget):
+class command_centre(QWidget):
 
     def __init__(self):
         super().__init__()
         self.launcher = tenx()
         self.launcher.connect_launcher()
-        self.add_icon()
+        self.boot_screen = boot_screen()
+        self.command_screen = command_screen()
         self.screen = "boot"
-        self.initUI()
+        self.boot_screen.show()
+        self.spawn_monitors()
+        self.connection_monitor.start()
+        self.boot_window_monitor.start()
 
-    def initUI(self):
-        self.a_geo = QDesktopWidget().availableGeometry()
-        self.setWindowTitle("Missile Command")
-        self.size_window()
-        self.centre_window()
-        self.define_colors()
-        self.color_window()
-        self.show()
-        self.add_boot_window()
-        self.usb_monitoring()
+    def usb_toggle(self):
+        self.launcher.connect_launcher()
+        self.launcher.tripped = True
+        self.update_usb_image()
+        self.update_boot_label()
+        self.change_window()        
 
-    def add_icon(self):
-        self.icon = QIcon()
-        self.icon.addFile("./Images/missile.png")
-        self.setWindowIcon(self.icon)
+    def change_window(self):
+        if (self.screen == "control")
+            self.screen = "boot"
+            print("Moved to boot screen")
+            self.command_screen.hide()
+            self.boot_screen.show()
+            self.boot_window_monitor.start()
+        else:
+            self.screen = "control"
+            print("Moved to control screen")
+            self.boot_screen.hide()
+            self.command_screen.show()
 
-    def add_boot_window(self):
-        self.initial_grid()
+    def spawnn_monitors(self):
+        self.connection_monitor = monitor_thread(self.launcher)
+        self.connection_monitor.signal.connect(self.usb_toggle)
+        self.boot_window_monitor = boot_window_monitor(self.launcher)
+        self.boot_window_monitor.signal.connect(self.change_window)
+
+
+class boot_screen(my_window):
+
+    def __init__(self, launcher):
+        super().__init__()
+        self.launcher = launcher
+        icon_str = "./Images/missile.png"
+        window_str = "Missile Command"
+        self.setWindowTitle(window_str)
+        self.add_icon(icon_str)
+        self.determine_geometry()
+        self.initUI(2, 2)
+
+    def add_widgets(self):
+        self.grid()
         self.add_usb_image()
         self.add_boot_label()
-        self.boot_monitoring()
 
     def add_boot_label(self):
-
         self.boot_label = QLabel()
         font = QFont('Droid Sans', 16)
         font.setBold(True)
         self.boot_label.setFont(font)
-
         text_color = QColor()
         text_color.setNamedColor(self.grey)
-
         pal = QPalette()
         pal.setColor(QPalette.WindowText, text_color)
         self.boot_label.setPalette(pal)
-
         self.grid.addWidget(self.boot_label, 0, 0, Qt.AlignCenter)
-
         self.spacing_label = QLabel()
         self.grid.addWidget(self.spacing_label, 2, 0, Qt.AlignCenter)
-
         self.update_boot_label()
-
-
-    def usb_monitoring(self):
-        self.connection_monitor = monitor_thread(self.launcher)
-        self.connection_monitor.signal.connect(self.usb_toggle)
-        self.connection_monitor.start()
-
-    def define_colors(self):
-        self.window_color = "#DEDEDE"
-        self.rocket_red = "#C20024"
-        self.grey = "#4D4D4D"
-
-    def color_window(self):
-        pal = QPalette()
-        my_window_color = QColor()
-        my_window_color.setNamedColor(self.window_color)
-        pal.setColor(QPalette.Window, my_window_color)
-        self.setPalette(pal)
-
-    def size_window(self):
-        self.height = self.a_geo.height()/2
-        self.width = self.a_geo.width()/2
-        self.resize(self.width, self.height)
-
-    def centre_window(self):
-        centre = self.a_geo.center()
-        x = centre.x()
-        y = centre.y()
-        self.move(x-self.width/2, y-self.height/2)
-
-    def initial_grid(self):
-        self.grid = QGridLayout()
-        self.setLayout(self.grid)
 
     def add_usb_image(self):
 
@@ -147,17 +134,6 @@ class usb_window(QWidget):
         self.usb_image.max_height = self.height/2
         self.grid.addWidget(self.usb_image, 1, 0, Qt.AlignHCenter)
         self.update_usb_image()
-
-
-    def animate_svg(self, svg_image):
-        svg_image.opac_eff = QGraphicsOpacityEffect()
-        svg_image.setGraphicsEffect(svg_image.opac_eff)
-        svg_image.animation = QPropertyAnimation(svg_image.opac_eff, b"opacity")
-        svg_image.animation.setDuration(2000)
-        svg_image.animation.setStartValue(0.1)
-        svg_image.animation.setEndValue(1)
-        svg_image.animation.setEasingCurve(QEasingCurve.OutCirc)
-        svg_image.animation.start()
 
     def update_usb_image(self):
 
@@ -180,34 +156,69 @@ class usb_window(QWidget):
         else:
             self.boot_label.setText("Welcome Commander")
 
-    def usb_toggle(self):
-        self.launcher.connect_launcher()
-        if (self.screen == "control"):
-            self.change_window()
-        else:
-            self.launcher.tripped = True
-            self.update_usb_image()
-            self.update_boot_label()
 
-    def change_window(self):
-        if (self.screen == "control")
-            self.screen = "boot"
-            print("Moved to boot screen")
-            # delete this grid and its widgets
-            # self.add_boot_window()
-        else:
-            self.screen = "control"
-            print("Moved to control screen")
-            # delete this grid and its widgets (or hide them)
-            # self.add_control_window()
+class my_window(QWidget):
 
-    def boot_monitoring(self):
-        self.boot_window_monitor = boot_window_monitor(self.launcher)
-        self.boot_window_monitor.signal.connect(self.change_window)
-        self.boot_window_monitor.start()
+    def __init__(self):
+        super().__init__()
+
+    def initUI(self, w_factor, h_factor):
+        self.size_window(w_factor, h_factor)
+        self.centre_window()
+        self.define_colors()
+        self.color_window()
+        self.add_widgets()
+
+    def determine_geometry(self):
+        self.geo = QDesktopWidget().availableGeometry()
+
+    def add_icon(self, string):
+        self.icon = QIcon()
+        self.icon.addFile(string)
+        self.setWindowIcon(self.icon)
+
+    def define_colors(self):
+        self.window_color = "#DEDEDE"
+        self.rocket_red = "#C20024"
+        self.grey = "#4D4D4D"
+
+    def color_window(self):
+        pal = QPalette()
+        my_window_color = QColor()
+        my_window_color.setNamedColor(self.window_color)
+        pal.setColor(QPalette.Window, my_window_color)
+        self.setPalette(pal)
+
+    def size_window(self, w_factor, h_factor):
+        self.width = self.geo.width()/w_factor
+        self.height = self.geo.height()/h_factor
+        self.resize(self.width, self.height)
+
+    def centre_window(self):
+        centre = self.geo.center()
+        x = centre.x()
+        y = centre.y()
+        self.move(x-self.width/2, y-self.height/2)
+
+    def grid(self):
+        self.grid = QGridLayout()
+        self.setLayout(self.grid)
+
+    def animate_svg(self, svg_image):
+        svg_image.opac_eff = QGraphicsOpacityEffect()
+        svg_image.setGraphicsEffect(svg_image.opac_eff)
+        svg_image.animation = QPropertyAnimation(svg_image.opac_eff, b"opacity")
+        svg_image.animation.setDuration(2000)
+        svg_image.animation.setStartValue(0.1)
+        svg_image.animation.setEndValue(1)
+        svg_image.animation.setEasingCurve(QEasingCurve.OutCirc)
+        svg_image.animation.start()
+
+    def add_widgets(self):
+        print("Please subclass and reimplement this function")
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
-    myapp = usb_window()
+    myapp = command_centre()
     sys.exit(app.exec_())
