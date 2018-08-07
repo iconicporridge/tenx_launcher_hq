@@ -47,14 +47,27 @@ class tenx:
         self.rightdown = ( 0,  0,  1,  0,  1,  0)
         self.fire      = ( 0,  0,  0,  0,  0,  1)
 
+    def mv_down(self):
+        if (self.dev is not None):
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.up+self.CMDFILL)
+
+    def fire_launcher(self):
+        if (self.dev is not None):
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.fire+self.CMDFILL)
 
     def send_cmd(self, cmd):
-        self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
-        self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
-        self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, cmd+self.CMDFILL)
+        if (self.dev is not None):
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
+            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, cmd+self.CMDFILL)
+
 
 if __name__ == '__main__':
     launcher = tenx()
     launcher.connect_launcher()
-    launcher.send_cmd(launcher.up)
+    launcher.mv_down()
     print("Away")

@@ -10,7 +10,8 @@ from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread, Qt, QRect
 from launcher import tenx
 
 class monitor_thread(QThread):
-
+# This thread checks if the state of the USB connection has
+# changed. If it has changed, the USB_insert window changes
     signal = pyqtSignal()
 
     def __init__(self, launcher):
@@ -31,6 +32,8 @@ class monitor_thread(QThread):
                 self.sleep(0.1)
 
 class boot_window_monitor(QThread):
+# This thead checks to see if the launcher has been plugged
+# in for some number of seconds. If so, the window changes.
 
         signal = pyqtSignal()
 
@@ -128,17 +131,17 @@ class command_centre(QWidget):
         self.launcher.tripped = True
         self.boot_screen.update_usb_image()
         self.boot_screen.update_boot_label()
+        if (self.screen == "control"):
+            self.change_window()
 
     def change_window(self):
         if (self.screen == "control"):
             self.screen = "boot"
-            print("Moved to boot screen")
             self.command_screen.hide()
             self.boot_screen.show()
             self.boot_window_monitor.start()
         else:
             self.screen = "control"
-            print("Moved to control screen")
             self.boot_screen.hide()
             self.command_screen.show()
 
@@ -160,7 +163,6 @@ class boot_screen(my_window):
         self.add_icon(icon_str)
         self.determine_geometry()
         self.initUI(2, 2)
-        self.add_widgets()
 
     def add_widgets(self):
         self.create_grid()
@@ -193,7 +195,6 @@ class boot_screen(my_window):
 
     def update_usb_image(self):
 
-        print("Image Updating!")
         if (self.launcher.dev is None):
             self.usb_image.load(self.usb_image.image0)
             self.usb_image.aspect_ratio = 1.0
@@ -208,10 +209,10 @@ class boot_screen(my_window):
         self.animate_svg(self.usb_image)
 
     def update_boot_label(self):
-        print("Updating Text!")
         if (self.launcher.dev is None):
             self.boot_label.setText("Please insert your Tenx launcher")
         else:
+            print("text should be welcome commander")
             self.boot_label.setText("Welcome Commander")
 
 
@@ -228,15 +229,12 @@ class command_screen(my_window):
             self.determine_geometry()
             self.initUI(1.5, 1.5)
 
-
         def add_widgets(self):
             self.create_grid()
             self.fire_button = QPushButton()
             self.fire_button.setText("Fire")
-            # self.fire_button.clicked.connect(
-            #     self.launcher.send_cmd(self.launcher.fire))
             self.grid.addWidget(self.fire_button, 1, 1)
-
+            self.fire_button.clicked.connect(self.launcher.mv_down)
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
