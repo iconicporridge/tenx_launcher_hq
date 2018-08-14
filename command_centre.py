@@ -9,6 +9,10 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread, Qt, QRect
 from launcher import tenx
 
+
+# TODO closing behaviour (close both windows)
+# TODO change way that other classes access launcher (through "parent")
+
 class monitor_thread(QThread):
 # This thread checks if the state of the USB connection has
 # changed. If it has changed, the USB_insert window changes
@@ -46,7 +50,7 @@ class boot_window_monitor(QThread):
             while running:
                 if (self.launcher.dev is not None):
                     self.launcher.tripped = False
-                    self.sleep(2)
+                    self.sleep(1)
                     if (self.launcher.tripped == False):
                         self.signal.emit()
                         running = False
@@ -180,8 +184,6 @@ class boot_screen(my_window):
         pal.setColor(QPalette.WindowText, text_color)
         self.boot_label.setPalette(pal)
         self.grid.addWidget(self.boot_label, 0, 0, Qt.AlignCenter)
-        self.spacing_label = QLabel()
-        self.grid.addWidget(self.spacing_label, 2, 0, Qt.AlignCenter)
         self.update_boot_label()
 
     def add_usb_image(self):
@@ -191,6 +193,8 @@ class boot_screen(my_window):
         self.usb_image.image1 = './Images/usb-1.svg'
         self.usb_image.max_height = self.height/2
         self.grid.addWidget(self.usb_image, 1, 0, Qt.AlignHCenter)
+        self.spacing_label = QLabel()
+        self.grid.addWidget(self.spacing_label, 2, 0, Qt.AlignCenter)
         self.update_usb_image()
 
     def update_usb_image(self):
@@ -215,8 +219,6 @@ class boot_screen(my_window):
             print("text should be welcome commander")
             self.boot_label.setText("Welcome Commander")
 
-
-
 class command_screen(my_window):
 
         def __init__(self, launcher):
@@ -231,10 +233,55 @@ class command_screen(my_window):
 
         def add_widgets(self):
             self.create_grid()
+            self.add_spacing()
+            self.add_fire()
+            self.add_down()
+            self.add_up()
+            # self.add_left()
+            # self.add_right()
+
+        def add_spacing(self):
+            # self.top_label = QLabel()
+            # self.bottom_label = QLabel()
+            # self.grid.addWidget(self.top_label, 1, 1, Qt.AlignCenter)
+            self.grid.setRowStretch(1, 1)
+            self.grid.setRowStretch(5, 1)
+
+        def add_up(self):
+            self.up_button = QPushButton()
+            self.up_button.setText("Up")
+            self.grid.addWidget(self.up_button, 2, 1, Qt.AlignCenter)
+            self.up_button.clicked.connect(lambda:self.launcher.move(self.launcher.up))
+
+
+        def add_fire(self):
             self.fire_button = QPushButton()
             self.fire_button.setText("Fire")
-            self.grid.addWidget(self.fire_button, 1, 1)
-            self.fire_button.clicked.connect(self.launcher.mv_down)
+            self.grid.addWidget(self.fire_button, 3, 1, Qt.AlignCenter)
+            self.fire_button.clicked.connect(self.launcher.fire_launcher)
+
+        def add_down(self):
+            self.down_button = QPushButton()
+            self.down_button.setText("Down")
+            self.grid.addWidget(self.down_button, 4, 1, Qt.AlignCenter)
+            self.down_button.clicked.connect(lambda:self.launcher.move(self.launcher.down))
+
+
+
+
+
+        # def add_fire_button(self):
+        #     self.fire_button = QPushButton()
+        #     self.fire_button.setText("Fire")
+        #     self.grid.addWidget(self.fire_button, 1, 1)
+        #     self.fire_button.clicked.connect(self.launcher.fire_launcher)
+        #
+        # def add_fire_button(self):
+        #     self.fire_button = QPushButton()
+        #     self.fire_button.setText("Fire")
+        #     self.grid.addWidget(self.fire_button, 1, 1)
+        #     self.fire_button.clicked.connect(self.launcher.fire_launcher)
+
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
