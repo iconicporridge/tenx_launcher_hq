@@ -12,6 +12,8 @@ from launcher import tenx
 
 # TODO closing behaviour (close both windows)
 # TODO change way that other classes access launcher (through "parent")
+# TODO thread or otherwise deal with the moving of rockets that requires a
+#      sleep event
 
 class monitor_thread(QThread):
 # This thread checks if the state of the USB connection has
