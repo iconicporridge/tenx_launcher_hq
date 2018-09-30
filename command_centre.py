@@ -9,11 +9,9 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QThread, Qt, QRect
 from launcher import tenx
 
-
-# TODO closing behaviour (close both windows)
-# TODO change way that other classes access launcher (through "parent")
-# TODO thread or otherwise deal with the moving of rockets that requires a
-#      sleep event
+# TODO closing behaviour errors
+# TODO themeing, picture and about
+# TODO Barrage! Button
 
 class monitor_thread(QThread):
 # This thread checks if the state of the USB connection has
@@ -239,50 +237,106 @@ class command_screen(my_window):
             self.add_fire()
             self.add_down()
             self.add_up()
-            # self.add_left()
-            # self.add_right()
+            self.add_left()
+            self.add_right()
+            self.add_leftup()
+            self.add_rightup()
+            self.add_leftdown()
+            self.add_rightdown()
 
         def add_spacing(self):
-            # self.top_label = QLabel()
-            # self.bottom_label = QLabel()
-            # self.grid.addWidget(self.top_label, 1, 1, Qt.AlignCenter)
             self.grid.setRowStretch(1, 1)
             self.grid.setRowStretch(5, 1)
+
+        def add_left(self):
+            self.left_button = QPushButton()
+            self.left_button.setText("left")
+            self.grid.addWidget(self.left_button, 3, 2, Qt.AlignCenter)
+            self.left_button.pressed.connect(self.left)
+            self.left_button.released.connect(self.stop)
+
+        def add_right(self):
+            self.right_button = QPushButton()
+            self.right_button.setText("right")
+            self.grid.addWidget(self.right_button, 3, 4, Qt.AlignCenter)
+            self.right_button.pressed.connect(self.right)
+            self.right_button.released.connect(self.stop)
 
         def add_up(self):
             self.up_button = QPushButton()
             self.up_button.setText("Up")
-            self.grid.addWidget(self.up_button, 2, 1, Qt.AlignCenter)
-            self.up_button.clicked.connect(lambda:self.launcher.move(self.launcher.up))
+            self.grid.addWidget(self.up_button, 2, 3, Qt.AlignCenter)
+            self.up_button.pressed.connect(self.up)
+            self.up_button.released.connect(self.stop)
 
+        def add_rightup(self):
+            self.rightup_button = QPushButton()
+            self.rightup_button.setText("Up-R")
+            self.grid.addWidget(self.rightup_button, 2, 4, Qt.AlignCenter)
+            self.rightup_button.pressed.connect(self.rightup)
+            self.rightup_button.released.connect(self.stop)
 
-        def add_fire(self):
-            self.fire_button = QPushButton()
-            self.fire_button.setText("Fire")
-            self.grid.addWidget(self.fire_button, 3, 1, Qt.AlignCenter)
-            self.fire_button.clicked.connect(self.launcher.fire_launcher)
+        def add_leftup(self):
+            self.leftup_button = QPushButton()
+            self.leftup_button.setText("Up-R")
+            self.grid.addWidget(self.leftup_button, 2, 2, Qt.AlignCenter)
+            self.leftup_button.pressed.connect(self.leftup)
+            self.leftup_button.released.connect(self.stop)
 
         def add_down(self):
             self.down_button = QPushButton()
             self.down_button.setText("Down")
-            self.grid.addWidget(self.down_button, 4, 1, Qt.AlignCenter)
-            self.down_button.clicked.connect(lambda:self.launcher.move(self.launcher.down))
+            self.grid.addWidget(self.down_button, 4, 3, Qt.AlignCenter)
+            self.down_button.pressed.connect(self.down)
+            self.down_button.released.connect(self.stop)
+
+        def add_leftdown(self):
+            self.leftdown_button = QPushButton()
+            self.leftdown_button.setText("down-R")
+            self.grid.addWidget(self.leftdown_button, 4, 2, Qt.AlignCenter)
+            self.leftdown_button.pressed.connect(self.leftdown)
+            self.leftdown_button.released.connect(self.stop)
+
+        def add_rightdown(self):
+            self.rightdown_button = QPushButton()
+            self.rightdown_button.setText("down-R")
+            self.grid.addWidget(self.rightdown_button, 4, 4, Qt.AlignCenter)
+            self.rightdown_button.pressed.connect(self.rightdown)
+            self.rightdown_button.released.connect(self.stop)
+
+        def add_fire(self):
+            self.fire_button = QPushButton()
+            self.fire_button.setText("Fire")
+            self.grid.addWidget(self.fire_button, 3, 3, Qt.AlignCenter)
+            self.fire_button.clicked.connect(self.launcher.fire_launcher)
 
 
+        def down(self):
+            self.launcher.move(self.launcher.down)
 
+        def up(self):
+            self.launcher.move(self.launcher.up)
 
+        def left(self):
+            self.launcher.move(self.launcher.left)
 
-        # def add_fire_button(self):
-        #     self.fire_button = QPushButton()
-        #     self.fire_button.setText("Fire")
-        #     self.grid.addWidget(self.fire_button, 1, 1)
-        #     self.fire_button.clicked.connect(self.launcher.fire_launcher)
-        #
-        # def add_fire_button(self):
-        #     self.fire_button = QPushButton()
-        #     self.fire_button.setText("Fire")
-        #     self.grid.addWidget(self.fire_button, 1, 1)
-        #     self.fire_button.clicked.connect(self.launcher.fire_launcher)
+        def right(self):
+            self.launcher.move(self.launcher.right)
+
+        def rightup(self):
+            self.launcher.move(self.launcher.rightup)
+
+        def leftup(self):
+            self.launcher.move(self.launcher.leftup)
+
+        def leftdown(self):
+            self.launcher.move(self.launcher.leftdown)
+
+        def rightdown(self):
+            self.launcher.move(self.launcher.rightdown)
+
+        def stop(self):
+            self.launcher.move(self.launcher.stop)
 
 
 if __name__ == '__main__':
