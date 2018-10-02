@@ -58,8 +58,3 @@ class tenx:
             self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
             self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
             self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, cmd+self.CMDFILL)
-
-if __name__ == '__main__':
-    launcher = tenx()
-    launcher.connect_launcher()
-    launcher.move(launcher.down)
