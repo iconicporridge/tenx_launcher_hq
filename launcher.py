@@ -1,5 +1,3 @@
-# Code modified from https://code.google.com/archive/p/pymissile/ and Codedance
-# Retaliation: https://github.com/codedance/Retaliation
 import sys
 import platform
 import usb

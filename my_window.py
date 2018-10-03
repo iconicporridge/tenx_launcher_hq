@@ -1,3 +1,4 @@
+# Own window class for other widgets, I'm sure there is a QtClass somewhere
 from PyQt5.QtWidgets import QDesktopWidget, QWidget, QGridLayout
 from PyQt5.QtWidgets import QGraphicsOpacityEffect
 from PyQt5.QtGui import QIcon, QColor, QPalette
