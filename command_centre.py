@@ -1,4 +1,3 @@
-
 # the .py file for the main loop and its threads
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtCore import pyqtSignal, QThread
@@ -12,7 +11,6 @@ from boot_screen import boot_screen
 from command_screen import command_screen
 
 
-# TODO themeing, picture and about
 # TODO if it's possible to implement a continous turn
 
 class connection_thread(QThread):
@@ -46,20 +44,18 @@ class change_window_thread(QThread):
             self.launcher = self.parent().launcher
 
         def run(self):
-            self.signal.emit()
-            # self.parent().change_window_thread_runnning = True
-            # while self.parent().change_window_thread_runnning:
-            #     if (self.launcher.dev is not None):
-            #         self.launcher.tripped = False
-            #         self.sleep(1)
-            #         if (self.launcher.tripped == False):
-            #             self.signal.emit()
-            #             self.parent().change_window_thread_runnning = False
-            #         else:
-            #             self.sleep(0.1)
-            #     else:
-            #         self.sleep(0.1)
-
+            self.parent().change_window_thread_runnning = True
+            while self.parent().change_window_thread_runnning:
+                if (self.launcher.dev is not None):
+                    self.launcher.tripped = False
+                    self.sleep(1)
+                    if (self.launcher.tripped == False):
+                        self.signal.emit()
+                        self.parent().change_window_thread_runnning = False
+                    else:
+                        self.sleep(0.1)
+                else:
+                    self.sleep(0.1)
 
 class command_centre(QWidget):
 

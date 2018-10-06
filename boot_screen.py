@@ -41,7 +41,7 @@ class boot_screen(my_window):
         self.usb_image = QSvgWidget(parent=self)
         self.usb_image.image0 = './Images/usb-0.svg'
         self.usb_image.image1 = './Images/usb-1.svg'
-        self.usb_image.max_height = self.height/2
+        self.usb_image.max_height = self.h/2
         self.grid.addWidget(self.usb_image, 1, 0, Qt.AlignHCenter)
         self.spacing_label = QLabel(parent=self)
         self.grid.addWidget(self.spacing_label, 2, 0, Qt.AlignCenter)
