@@ -10,7 +10,6 @@ from my_window import my_window
 from boot_screen import boot_screen
 from command_screen import command_screen
 
-
 # TODO if it's possible to implement a continous turn
 
 class connection_thread(QThread):
