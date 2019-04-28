@@ -2,13 +2,12 @@
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtCore import pyqtSignal, QThread
 
+from lib.launcher import tenx
+from lib.boot_screen import boot_screen
+from lib.command_screen import command_screen
+
 import sys
 import signal
-
-from launcher import tenx
-from my_window import my_window
-from boot_screen import boot_screen
-from command_screen import command_screen
 
 # TODO if it's possible to implement a continous turn
 
@@ -42,6 +41,7 @@ class change_window_thread(QThread):
             super().__init__(parent)
             self.launcher = self.parent().launcher
 
+
         def run(self):
             self.parent().change_window_thread_runnning = True
             while self.parent().change_window_thread_runnning:
@@ -69,6 +69,7 @@ class command_centre(QWidget):
         self.screen = "boot"
         self.boot_screen.show()
         self.spawn_monitors()
+
 
     def close(self):
         try:
@@ -111,7 +112,8 @@ class command_centre(QWidget):
         self.change_window_thread.start()
 
 if __name__ == '__main__':
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = QApplication(sys.argv)
+    app = QApplication([])
     myapp = command_centre()
     sys.exit(app.exec())
