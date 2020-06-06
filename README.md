@@ -1,4 +1,4 @@
-# Tenx-LauncherHQ
+# tenx_launcher_hq
 
 A repository for my python codes to operate a Tenx (M&amp;S) USB foam missile launcher. I'm running elementary os Juno, probably won't work straight off the bat in Windows (because I haven't used os to control filepaths). 
 
