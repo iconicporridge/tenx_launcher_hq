@@ -10,10 +10,10 @@ class tenx:
 
     def connect_launcher(self):
         self.dev = usb.core.find(idVendor=0x1130, idProduct=0x0202)
-        # On windows, there seems to be some problem with the configuration not being set properly when carrying out commands
-        # so here I use:
-        # self.dev.set_configuration(1)
+        # On windows, there seems to be some problem with the configuration not being set automatically
+        # use self.dev.set_configuration(1) inside the try or an if self.dev: statement
         try:
+            # self.dev.set_configuration(1)
             self.dev.detach_kernel_driver(0)
             self.dev.detach_kernel_driver(1)
         except Exception as e:
