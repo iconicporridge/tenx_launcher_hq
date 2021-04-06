@@ -2,7 +2,7 @@ MIT licensed Sam Henderson 2021 https://opensource.org/licenses/MIT
 
 # tenx_launcher_hq
 
-A repository for my python codes to operate a Tenx (M&amp;S) USB foam missile launcher. I'm running elementary os Juno, probably won't work straight off the bat in Windows (because I haven't used os to control filepaths). 
+A repository for my python codes to operate a Tenx (M&amp;S) USB foam missile launcher. See the Udev rules section for a known Linux problem and the Windows problems for things you might have to do to get it running under windows. 
 
 ## Dependancies
 
@@ -17,7 +17,8 @@ Run "command_centre.py" with "python command_centre.py" or your system equivalen
 You might need extra permissions to use a USB device from python. One way is to use sudo, but you might not want your kids to have your password. I've included an example udev rule "99-missile-launcher.rules", which goes in /etc/udev/rules.d on Ubuntu like systems. You'll need to modify the rule to your username etc. place it in the correct directory and restart your computer.
 
 ## Windows Problems
-Libusb is not a default on windows like it is for most linux systems. Install https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/libusb-win32-devel-filter-1.2.6.0.exe/ or some other version of libusb. 
+
+Libusb is not a default on windows like it is for most linux systems. Install https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/libusb-win32-devel-filter-1.2.6.0.exe/ or some other version of libusb. Right now there is a comment in launcher.py you may need to uncomment on windows, in the connect_launcher function.
 
 ## License Stuff
 Icons from FlatIcon/freepik under CC 3.0 BY
