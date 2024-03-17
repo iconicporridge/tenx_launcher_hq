@@ -33,8 +33,6 @@ An alternative is setting udev rules. I've included an example udev rule `99-mis
 ### Libusb
 Libusb is not a default on windows like it is for most linux systems. There are a variety of different libusb 'backends' available. The most common is called libusb1.0 but that didn't work on windows for this project (it worked fine on Arch). I'm using libusb0.1. You can change the backend in `lib/launcher.py`. Find out more at the [pyusb project](https://github.com/pyusb/pyusb).
 
-## License Stuff
-Icons from FlatIcon/freepik under CC 3.0 BY
-Code for sending the USB signals was modified from [pymissile](https://code.google.com/archive/p/pymissile/) and [Codedance's Retaliation](https://github.com/codedance/Retaliation). I don't understand USB protocols so I wouldn't have done it without you, thanks :).
+
 
 
