@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QIcon, QFont, QColor, QPalette
+from PyQt5.QtGui import QFont, QColor, QPalette
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt
@@ -58,8 +58,8 @@ class boot_screen(my_window):
 
         height = self.usb_image.max_height
         width = height*self.usb_image.aspect_ratio
-        self.usb_image.setFixedWidth(width)
-        self.usb_image.setFixedHeight(height)
+        self.usb_image.setFixedWidth(int(width))
+        self.usb_image.setFixedHeight(int(height))
         self.animate_svg(self.usb_image)
 
     def update_boot_label(self):

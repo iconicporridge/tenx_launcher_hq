@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QPixmap, QTransform, QIcon, QMovie
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QPushButton, QSizePolicy, QLabel
+from PyQt5.QtWidgets import QPushButton, QLabel
 
 from .my_window import my_window
 
@@ -30,8 +30,7 @@ class command_screen(my_window):
 
         def add_widgets(self):
             button_height = self.height()/4
-            self.button_size = QSize(button_height, button_height)
-
+            self.button_size = QSize(int(button_height), int(button_height))
             self.create_grid()
             self.add_gif()
             self.add_spacing()

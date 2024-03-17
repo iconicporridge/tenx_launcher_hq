@@ -38,13 +38,13 @@ class my_window(QWidget):
     def size_window(self, w_factor, h_factor):
         self.w = self.geo.width()/w_factor
         self.h = self.geo.height()/h_factor
-        self.resize(self.w, self.h)
+        self.resize(int(self.w), int(self.h))
 
     def centre_window(self):
         centre = self.geo.center()
         x = centre.x()
         y = centre.y()
-        self.move(x-self.w/2, y-self.h/2)
+        self.move(int(x-self.w/2), int(y-self.h/2))
 
     def create_grid(self):
         self.grid = QGridLayout()

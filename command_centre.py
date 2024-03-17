@@ -9,7 +9,7 @@ from lib.command_screen import command_screen
 import sys
 import signal
 
-# TODO if it's possible to implement a continous turn
+# TODO implement continuous turn?
 
 class connection_thread(QThread):
 # This thread checks if the state of the USB connection has
@@ -26,11 +26,11 @@ class connection_thread(QThread):
         while self.parent().connection_thread_running:
             self.new_state = self.launcher.check_connection()
             if (self.new_state == self.state):
-                self.sleep(0.1)
+                self.sleep(1)
             else:
                 self.state = self.new_state
                 self.signal.emit()
-                self.sleep(0.1)
+                self.sleep(1)
 
 class change_window_thread(QThread):
 # This thead checks to see if the launcher has been plugged
@@ -52,9 +52,9 @@ class change_window_thread(QThread):
                         self.signal.emit()
                         self.parent().change_window_thread_runnning = False
                     else:
-                        self.sleep(0.1)
+                        self.sleep(1)
                 else:
-                    self.sleep(0.1)
+                    self.sleep(1)
 
 class command_centre(QWidget):
 
