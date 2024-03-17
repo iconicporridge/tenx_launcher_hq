@@ -1,19 +1,17 @@
 # the .py file for the main loop and its threads
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtCore import pyqtSignal, QThread
-
 from lib.launcher import tenx
 from lib.boot_screen import boot_screen
 from lib.command_screen import command_screen
-
 import sys
 import signal
 
-# TODO implement continuous turn?
 
-class connection_thread(QThread):
 # This thread checks if the state of the USB connection has
 # changed. If it has changed, the USB_insert window changes
+class connection_thread(QThread):
+
     signal = pyqtSignal()
 
     def __init__(self, parent):
@@ -32,29 +30,31 @@ class connection_thread(QThread):
                 self.signal.emit()
                 self.sleep(1)
 
-class change_window_thread(QThread):
-# This thead checks to see if the launcher has been plugged
+
+# This thread checks to see if the launcher has been plugged
 # in for some number of seconds. If so, the window changes.
-        signal = pyqtSignal()
+class change_window_thread(QThread):
 
-        def __init__(self, parent):
-            super().__init__(parent)
-            self.launcher = self.parent().launcher
+    signal = pyqtSignal()
 
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.launcher = self.parent().launcher
 
-        def run(self):
-            self.parent().change_window_thread_runnning = True
-            while self.parent().change_window_thread_runnning:
-                if (self.launcher.dev is not None):
-                    self.launcher.tripped = False
-                    self.sleep(1)
-                    if (self.launcher.tripped == False):
-                        self.signal.emit()
-                        self.parent().change_window_thread_runnning = False
-                    else:
-                        self.sleep(1)
+    def run(self):
+        self.parent().change_window_thread_runnning = True
+        while self.parent().change_window_thread_runnning:
+            if (self.launcher.dev is not None):
+                self.launcher.tripped = False
+                self.sleep(1)
+                if (self.launcher.tripped is False):
+                    self.signal.emit()
+                    self.parent().change_window_thread_runnning = False
                 else:
                     self.sleep(1)
+            else:
+                self.sleep(1)
+
 
 class command_centre(QWidget):
 
@@ -70,7 +70,6 @@ class command_centre(QWidget):
         self.boot_screen.show()
         self.spawn_monitors()
 
-
     def close(self):
         try:
             self.change_window_thread_runnning = False
@@ -79,7 +78,7 @@ class command_centre(QWidget):
             self.change_window_thread.wait()
             self.boot_screen.close()
             self.command_screen.close()
-        except Exception as e:
+        except Exception:
             pass
 
     def usb_toggle(self):
@@ -111,8 +110,8 @@ class command_centre(QWidget):
         self.connection_thread.start()
         self.change_window_thread.start()
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication([])
     myapp = command_centre()

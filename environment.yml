@@ -1,0 +1,6 @@
+name: usb-launcher
+
+dependencies:
+  - pyqt5=5.15
+  - pip:
+    - pyusb==1.2.1

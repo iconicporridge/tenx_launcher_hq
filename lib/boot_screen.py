@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 
 from .my_window import my_window
 
+
 class boot_screen(my_window):
 
     def __init__(self, parent, launcher):

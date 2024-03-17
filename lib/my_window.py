@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QGraphicsOpacityEffect
 from PyQt5.QtGui import QIcon, QColor, QPalette
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve
 
+
 class my_window(QWidget):
 
     def __init__(self, parent):

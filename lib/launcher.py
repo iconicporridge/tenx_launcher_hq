@@ -1,6 +1,9 @@
-import libusb_package as lu
-import os
-os.environ['PYUSB_DEBUG'] = 'debug'
+import usb.core
+from usb.backend import libusb0
+
+# This backend works on windows
+backend = libusb0.get_backend()
+
 
 class tenx:
 
@@ -8,16 +11,21 @@ class tenx:
         self.setup_commands()
 
     def connect_launcher(self):
-        self.dev = lu.find(idVendor=0x1130, idProduct=0x0202)
+        self.dev = usb.core.find(idVendor=0x1130, idProduct=0x0202, backend=backend)
+        # On Linux we detach the kernel driver because that seemed to help
         try:
             self.dev.detach_kernel_driver(0)
             self.dev.detach_kernel_driver(1)
-        except NotImplementedError as e:
+        except NotImplementedError:
             pass
-        self.dev.set_configuration()
+        try:
+            self.dev.set_configuration()
+        #  I'm expecting connect attempts when Dev isn't set
+        except AttributeError:
+            pass
 
     def check_connection(self):
-        dev = lu.find(idVendor=0x1130, idProduct=0x0202)
+        dev = usb.core.find(idVendor=0x1130, idProduct=0x0202, backend=backend)
         if (dev is None):
             return False
         else:
@@ -34,20 +42,20 @@ class tenx:
             0,  0,  0,  0,  0,  0,  0,  0,
             0,  0,  0,  0,  0,  0,  0,  0,
             0,  0,  0,  0,  0,  0,  0,  0)
-        self.stop      = ( 0,  0,  0,  0,  0,  0)
-        self.left     = ( 0,  1,  0,  0,  0,  0)
-        self.right     = ( 0,  0,  1,  0,  0,  0)
-        self.up        = ( 0,  0,  0,  1,  0,  0)
-        self.down = ( 0,  0,  0,  0,  1,  0)
-        self.leftup    = ( 0,  1,  0,  1,  0,  0)
-        self.rightup   = ( 0,  0,  1,  1,  0,  0)
-        self.leftdown  = ( 0,  1,  0,  0,  1,  0)
-        self.rightdown = ( 0,  0,  1,  0,  1,  0)
-        self.fire      = ( 0,  0,  0,  0,  0,  1)
+        self.stop = (0,  0,  0,  0,  0,  0)
+        self.left = (0,  1,  0,  0,  0,  0)
+        self.right = (0,  0,  1,  0,  0,  0)
+        self.up = (0,  0,  0,  1,  0,  0)
+        self.down = (0,  0,  0,  0,  1,  0)
+        self.leftup = (0,  1,  0,  1,  0,  0)
+        self.rightup = (0,  0,  1,  1,  0,  0)
+        self.leftdown = (0,  1,  0,  0,  1,  0)
+        self.rightdown = (0,  0,  1,  0,  1,  0)
+        self.fire = (0,  0,  0,  0,  0,  1)
 
     def fire_launcher(self):
         if (self.dev is not None):
-            self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITA)
+            self.dev.ctrl_transfer(bmRequestType=33, bRequest=9, wValue=2, wIndex=1, data_or_wLength=self.INITA)
             self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.INITB)
             self.dev.ctrl_transfer(0x21, 0x09, 0x02, 0x01, self.fire+self.CMDFILL)
 
