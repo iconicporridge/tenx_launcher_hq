@@ -16,7 +16,9 @@ class tenx:
         try:
             self.dev.detach_kernel_driver(0)
             self.dev.detach_kernel_driver(1)
-        except NotImplementedError:
+        # I'm expecting connect attempts when Dev isn't set (AttributeErrors)
+        # but also NotImplementedErrors when on windows
+        except Exception:
             pass
         try:
             self.dev.set_configuration()
