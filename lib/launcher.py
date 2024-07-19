@@ -1,8 +1,4 @@
 import usb.core
-from usb.backend import libusb0
-
-# This backend works on windows
-backend = libusb0.get_backend()
 
 
 class tenx:
@@ -11,7 +7,7 @@ class tenx:
         self.setup_commands()
 
     def connect_launcher(self):
-        self.dev = usb.core.find(idVendor=0x1130, idProduct=0x0202, backend=backend)
+        self.dev = usb.core.find(idVendor=0x1130, idProduct=0x0202)
         # On Linux we detach the kernel driver because that seemed to help
         try:
             self.dev.detach_kernel_driver(0)
@@ -27,7 +23,7 @@ class tenx:
             pass
 
     def check_connection(self):
-        dev = usb.core.find(idVendor=0x1130, idProduct=0x0202, backend=backend)
+        dev = usb.core.find(idVendor=0x1130, idProduct=0x0202)
         if (dev is None):
             return False
         else:
